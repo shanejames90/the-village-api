@@ -30,7 +30,7 @@ const router = express.Router()
 // INDEX
 // GET /children
 router.get('/children', requireToken, (req, res, next) => {
-  Child.find()
+  Child.find({ owner: req.user._id })
     .then(children => {
       // `children` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
@@ -43,11 +43,23 @@ router.get('/children', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// // SHOW
+// // GET /children/5a7db6c74d55bc51bdf39793
+// router.get('/children/:id', requireToken, (req, res, next) => {
+//   // req.params.id will be set based on the `:id` in the route
+//   Child.findById(req.params.id)
+//     .then(handle404)
+//     // if `findById` is succesful, respond with 200 and "child" JSON
+//     .then(child => res.status(200).json({ child: child.toObject() }))
+//     // if an error occurs, pass it to the handler
+//     .catch(next)
+// })
+
 // SHOW
 // GET /children/5a7db6c74d55bc51bdf39793
-router.get('/children/:id', requireToken, (req, res, next) => {
+router.get('/children/:firstName', requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  Child.findById(req.params.id)
+  Child.findOne({ firstName: req.params.firstName })
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "child" JSON
     .then(child => res.status(200).json({ child: child.toObject() }))
@@ -72,14 +84,37 @@ router.post('/children', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// // UPDATE
+// // PATCH /children/5a7db6c74d55bc51bdf39793
+// router.patch('/children/:id', requireToken, removeBlanks, (req, res, next) => {
+//   // if the client attempts to change the `owner` property by including a new
+//   // owner, prevent that by deleting that key/value pair
+//   delete req.body.child.owner
+//
+//   Child.findById(req.params.id)
+//     .then(handle404)
+//     .then(child => {
+//       // pass the `req` object and the Mongoose record to `requireOwnership`
+//       // it will throw an error if the current user isn't the owner
+//       requireOwnership(req, child)
+//
+//       // pass the result of Mongoose's `.update` to the next `.then`
+//       return child.updateOne(req.body.child)
+//     })
+//     // if that succeeded, return 204 and no JSON
+//     .then(() => res.sendStatus(204))
+//     // if an error occurs, pass it to the handler
+//     .catch(next)
+// })
+
 // UPDATE
 // PATCH /children/5a7db6c74d55bc51bdf39793
-router.patch('/children/:id', requireToken, removeBlanks, (req, res, next) => {
+router.patch('/children/:firstName', requireToken, removeBlanks, (req, res, next) => {
   // if the client attempts to change the `owner` property by including a new
   // owner, prevent that by deleting that key/value pair
   delete req.body.child.owner
 
-  Child.findById(req.params.id)
+  Child.findOne({ firstName: req.params.firstName })
     .then(handle404)
     .then(child => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
@@ -95,10 +130,27 @@ router.patch('/children/:id', requireToken, removeBlanks, (req, res, next) => {
     .catch(next)
 })
 
+// // DESTROY
+// // DELETE /children/5a7db6c74d55bc51bdf39793
+// router.delete('/children/:id', requireToken, (req, res, next) => {
+//   Child.findById(req.params.id)
+//     .then(handle404)
+//     .then(child => {
+//       // throw an error if current user doesn't own `child`
+//       requireOwnership(req, child)
+//       // delete the child ONLY IF the above didn't throw
+//       child.deleteOne()
+//     })
+//     // send back 204 and no content if the deletion succeeded
+//     .then(() => res.sendStatus(204))
+//     // if an error occurs, pass it to the handler
+//     .catch(next)
+// })
+
 // DESTROY
 // DELETE /children/5a7db6c74d55bc51bdf39793
-router.delete('/children/:id', requireToken, (req, res, next) => {
-  Child.findById(req.params.id)
+router.delete('/children/:firstName', requireToken, (req, res, next) => {
+  Child.findOne({ firstName: req.params.firstName })
     .then(handle404)
     .then(child => {
       // throw an error if current user doesn't own `child`

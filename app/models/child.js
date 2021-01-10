@@ -25,7 +25,14 @@ const childSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toObject: {
+    // remove `id` field when we call `.toObject`
+    transform: (_doc, child) => {
+      // delete child._id
+      return { name: child.firstName }
+    }
+  }
 })
 
 module.exports = mongoose.model('Child', childSchema)
