@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
+  firstName: {
+    type: String
+  },
   email: {
     type: String,
     required: true,
@@ -18,6 +21,7 @@ const userSchema = new mongoose.Schema({
     transform: (_doc, user) => {
       delete user.hashedPassword
       return user
+      // return { _id: user._id, name: user.firstName }
     }
   }
 })
