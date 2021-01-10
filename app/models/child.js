@@ -30,7 +30,10 @@ const childSchema = new mongoose.Schema({
     // remove `id` field when we call `.toObject`
     transform: (_doc, child) => {
       // delete child._id
-      return { name: child.firstName, dob: child.dob.toDateString() }
+      return { name: child.firstName,
+        dob: child.dob.toDateString(),
+        birthWeight: child.birthWeight,
+        birthLength: child.birthLength }
     }
   }
 })
